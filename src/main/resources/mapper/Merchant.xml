@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Merchant">
+    <select id="pager" parameterType="map" resultType="map">
+        select * from merchant
+        <where>
+            <if test="name!= null and name != ''">
+                (name LIKE CONCAT('%',#{name},'%') or pinyin_inital LIKE CONCAT('%',#{name},'%') or pinyin LIKE CONCAT('%',#{name},'%'))
+            </if>
+            <if test="state!= null and state != ''">
+                and state = #{state}
+            </if>
+        </where>
+        order by create_date desc  limit #{start} , #{limit}
+    </select>
+
+    <select id="pagerCount" parameterType="map" resultType="long">
+        select count(*) from merchant
+        <where>
+            <if test="name!= null and name != ''">
+                (name LIKE CONCAT('%',#{name},'%') or pinyin_inital LIKE CONCAT('%',#{name},'%') or pinyin LIKE CONCAT('%',#{name},'%'))
+            </if>
+            <if test="state!= null and state != ''">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <select id="load" parameterType="string" resultType="map">
+        select * from merchant where ID = #{_parameter}
+    </select>
+
+    <select id="list" resultType="map">
+        select * from merchant order by CREATE_DATE DESC
+    </select>
+
+    <insert id="save" parameterType="map">
+        INSERT INTO merchant (ID, NAME, LOGO , PINYIN_INITAL, PINYIN, DES, ADDRESS, LOCATION, TELPHONE, STATE, ORDER_LIST
+                              CREATEOR, CREATE_DATE, MODIFIER, MODIFY_DATE)
+        VALUES (uuid(), #{NAME}, #{LOGO} ,#{PINYIN_INITAL}, #{PINYIN}, #{DES}, #{ADDRESS}, #{LOCATION},
+                #{TELPHONE}, #{STATE},#{ORDER_LIST}, #{CREATEOR}, now(), #{MODIFIER}, now())
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE merchant
+        SET NAME = #{NAME},
+            LOGO = #{LOGO},
+            PINYIN_INITAL=#{PINYIN_INITAL},
+            PINYIN=#{PINYIN},
+            DES=#{DES},
+            ADDRESS=#{ADDRESS},
+            LOCATION=#{LOCATION},
+            TELPHONE=#{TELPHONE},
+            STATE        = #{STATE},
+            ORDER_LIST = #{ORDER_LIST},
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <update id="start" parameterType="map">
+        UPDATE merchant
+        SET STATE  = 0,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <update id="stop" parameterType="map">
+        UPDATE merchant
+        SET STATE  = 1,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <delete id="deleteById" parameterType="string">
+        DELETE
+        FROM merchant
+        WHERE ID = #{_parameter}
+    </delete>
+
+    <delete id="delete" parameterType="map">
+        DELETE FROM merchant WHERE ID in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SheetType">
+
+    <select id="pager" parameterType="map" resultType="map">
+        select st.* , b.name as BOOK_NAME from sheet_type st
+        left join book b on st.BOOK_ID = b.ID
+        <where>
+            <if test="merchantId!= null and merchantId != ''">
+                b.id in (select id from book where MERCHANT_ID = #{merchantId})
+            </if>
+            <if test="state!= null">
+                and st.state = #{state}
+            </if>
+        </where>
+        order by b.CREATE_DATE desc , st.ORDER_LIST asc LIMIT #{start} , #{limit}
+    </select>
+
+    <select id="pagerCount" parameterType="map" resultType="long">
+        select count(*) from sheet_type st
+        left join book b on st.BOOK_ID = b.ID
+        <where>
+            <if test="merchantId!= null and merchantId != ''">
+                b.id in (select id from book where MERCHANT_ID = #{merchantId})
+            </if>
+            <if test="state!= null">
+                and st.STATE = #{state}
+            </if>
+        </where>
+    </select>
+
+    <select id="load" parameterType="map" resultType="map">
+        select st.* , b.MERCHANT_ID from sheet_type st
+        left join book b on st.BOOK_ID = b.ID
+        where st.ID = #{ID}
+    </select>
+
+    <select id="list" parameterType="map" resultType="map">
+        select * from sheet_type where BOOK_ID=#{BOOK_ID} order by ORDER_LIST asc
+    </select>
+
+    <delete id="deleteByBookId" parameterType="string">
+        DELETE
+        FROM sheet_type
+        WHERE BOOK_ID = #{_parameter}
+    </delete>
+
+    <delete id="deleteByBookIds" parameterType="map">
+        DELETE
+        FROM sheet_type
+        WHERE BOOK_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

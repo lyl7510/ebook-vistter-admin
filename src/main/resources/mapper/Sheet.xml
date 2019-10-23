@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Sheet">
+
+    <delete id="deleteByBookId" parameterType="string">
+        delete from sheet where SHEET_TYPE_ID in (select id from sheet_type st where st.BOOK_ID = #{_parameter})
+    </delete>
+
+    <delete id="deleteByBookIds" parameterType="map">
+        delete from sheet where SHEET_TYPE_ID in (select id from sheet_type st where st.BOOK_ID in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBySheetTypeId" parameterType="string">
+        delete from sheet where SHEET_TYPE_ID = #{_parameter}
+    </delete>
+
+    <delete id="deleteBySheetTypeIds" parameterType="map">
+        delete from sheet where SHEET_TYPE_ID in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <insert id="save" parameterType="map">
+        INSERT INTO sheet (ID, UPLOAD_FILE_ID, PAGE, SHEET_TYPE_ID, BOOK_ID, CREATEOR, CREATE_DATE, MODIFIER,
+                           MODIFY_DATE)
+        VALUES (uuid(), #{UPLOAD_FILE_ID}, #{PAGE}, #{SHEET_TYPE_ID}, #{BOOK_ID}, #{CREATEOR}, now(), #{MODIFIER},
+                now())
+    </insert>
+
+    <delete id="deleteById" parameterType="string">
+        DELETE
+        FROM sheet
+        WHERE ID = #{_parameter}
+    </delete>
+
+    <update id="sortPage" parameterType="map">
+        update sheet as s
+            join (select @r := @r + 1 as row_num, newsheet.ID, newsheet.PAGE
+                  from (
+                           select s.*
+                           from sheet s
+                                    left join sheet_type st on s.SHEET_TYPE_ID = st.ID
+                           where s.BOOK_ID = #{BOOK_ID}
+                           order by st.ORDER_LIST asc, s.PAGE asc
+                       ) newsheet,
+                       (select @r := 0) b) as newsheet
+            on s.ID = newsheet.ID
+        set s.PAGE = newsheet.row_num
+        WHERE s.BOOK_ID = #{BOOK_ID}
+    </update>
+
+
+</mapper>

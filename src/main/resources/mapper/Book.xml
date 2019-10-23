@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Book">
+
+    <select id="countByMerchantId" parameterType="string" resultType="long">
+        select count(*) from book where MERCHANT_ID = #{_parameter}
+    </select>
+
+    <select id="countByMerchantIds" parameterType="map" resultType="long">
+        select count(*) from book where MERCHANT_ID in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="pager" parameterType="map" resultType="map">
+        select b.* , m.name as MERCHANT_NAME from book b
+        left join merchant m on b.MERCHANT_ID = m.ID
+        <where>
+            <if test="NAME!= null and NAME != ''">
+                (m.NAME LIKE CONCAT('%',#{NAME},'%') or m.pinyin_inital LIKE CONCAT('%',#{NAME},'%') or m.pinyin LIKE CONCAT('%',#{NAME},'%'))
+            </if>
+            <if test="state!= null">
+                and b.state = #{state}
+            </if>
+        </where>
+        order by b.create_date desc  limit #{start} , #{limit}
+    </select>
+
+    <select id="pagerCount" parameterType="map" resultType="long">
+        select count(*) from book b
+        left join merchant m on b.MERCHANT_ID = m.ID
+        <where>
+            <if test="NAME!= null and NAME != ''">
+                (m.NAME LIKE CONCAT('%',#{NAME},'%') or m.pinyin_inital LIKE CONCAT('%',#{NAME},'%') or m.pinyin LIKE CONCAT('%',#{NAME},'%'))
+            </if>
+            <if test="state!= null">
+                and b.state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <select id="load" parameterType="map" resultType="string">
+        select * from book where ID = #{_parameter}
+    </select>
+
+    <select id="list" parameterType="map" resultType="map">
+        select * from book where MERCHANT_ID = #{MERCHANT_ID}
+    </select>
+
+    <insert id="save" parameterType="map">
+        INSERT INTO book (ID, NAME, DES,COVER, MUSIC, MUSIC_STATE, PAGE_SOUND, MERCHANT_ID, STATE ,CREATEOR, CREATE_DATE, MODIFIER, MODIFY_DATE)
+        VALUES (uuid(), #{NAME}, #{DES}, #{COVER} ,#{MUSIC}, #{MUSIC_STATE}, #{PAGE_SOUND}, #{MERCHANT_ID}, #{STATE},#{CREATEOR}, now(), #{MODIFIER}, now())
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE book
+        SET NAME = #{NAME},
+            DES=#{DES},
+            COVER=#{COVER},
+            MUSIC=#{MUSIC},
+            MUSIC_STATE=#{MUSIC_STATE},
+            PAGE_SOUND=#{PAGE_SOUND},
+            MERCHANT_ID=#{MERCHANT_ID},
+            STATE = #{STATE},
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <delete id="deleteById" parameterType="string">
+        DELETE
+        FROM book
+        WHERE ID = #{_parameter}
+    </delete>
+
+    <update id="start" parameterType="map">
+        UPDATE book
+        SET STATE  = 0,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <update id="stop" parameterType="map">
+        UPDATE book
+        SET STATE  = 1,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <delete id="delete" parameterType="map">
+        DELETE FROM book WHERE ID in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <update id="xpublic" parameterType="map">
+        UPDATE book
+        SET PUBLIC  = 1,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+    <update id="unpubilc" parameterType="map">
+        UPDATE book
+        SET PUBLIC  = 0,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+</mapper>
