@@ -53,13 +53,13 @@ public class BookServiceImpl extends BaseServiceImpl implements BookService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void xpublic(Map paramMap) throws PlatformException{
-        this.xpublic(paramMap);
+        this.bookMapper.xpublic(paramMap);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void unpubilc(Map paramMap) throws PlatformException{
-        this.unpubilc(paramMap);
+        this.bookMapper.unpubilc(paramMap);
     }
 
     @Override

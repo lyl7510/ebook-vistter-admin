@@ -24,7 +24,7 @@ public class BookController {
     @Resource(name = "bookServiceImpl")
     private BookService bookService;
 
-    @RequestMapping(value = "/findPager", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+        @RequestMapping(value = "/findPager", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result findPager(@RequestBody Map paramMap){
         try {
             Pager pager = bookService.findPager(paramMap);

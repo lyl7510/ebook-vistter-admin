@@ -4,6 +4,10 @@
 
 <mapper namespace="Sheet">
 
+    <select id="list" parameterType="map" resultType="map">
+        select * from sheet where BOOK_ID = #{BOOK_ID} order by PAGE ASC
+    </select>
+
     <delete id="deleteByBookId" parameterType="string">
         delete from sheet where SHEET_TYPE_ID in (select id from sheet_type st where st.BOOK_ID = #{_parameter})
     </delete>
@@ -13,6 +17,7 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+        <![CDATA[)]]>
     </delete>
 
     <delete id="deleteBySheetTypeId" parameterType="string">

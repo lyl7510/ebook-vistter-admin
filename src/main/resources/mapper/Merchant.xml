@@ -37,7 +37,7 @@
     </select>
 
     <insert id="save" parameterType="map">
-        INSERT INTO merchant (ID, NAME, LOGO , PINYIN_INITAL, PINYIN, DES, ADDRESS, LOCATION, TELPHONE, STATE, ORDER_LIST
+        INSERT INTO merchant (ID, NAME, LOGO , PINYIN_INITAL, PINYIN, DES, ADDRESS, LOCATION, TELPHONE, STATE, ORDER_LIST,
                               CREATEOR, CREATE_DATE, MODIFIER, MODIFY_DATE)
         VALUES (uuid(), #{NAME}, #{LOGO} ,#{PINYIN_INITAL}, #{PINYIN}, #{DES}, #{ADDRESS}, #{LOCATION},
                 #{TELPHONE}, #{STATE},#{ORDER_LIST}, #{CREATEOR}, now(), #{MODIFIER}, now())

@@ -42,7 +42,7 @@
         </where>
     </select>
 
-    <select id="load" parameterType="map" resultType="string">
+    <select id="load" parameterType="string" resultType="map">
         select * from book where ID = #{_parameter}
     </select>
 

@@ -56,4 +56,51 @@
         </foreach>
     </delete>
 
+    <insert id="save" parameterType="map">
+        INSERT INTO sheet_type (ID, NAME, DES, ORDER_LIST, STATE, BOOK_ID , CREATEOR, CREATE_DATE, MODIFIER, MODIFY_DATE)
+        VALUES (uuid(), #{NAME}, #{DES}, #{ORDER_LIST}, #{STATE}, #{BOOK_ID}, #{CREATEOR}, now(), #{MODIFIER}, now())
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE sheet_type
+        SET NAME = #{NAME},
+            DES=#{DES},
+            ORDER_LIST=#{ORDER_LIST},
+            STATE=#{STATE},
+            BOOK_ID=#{BOOK_ID},
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <update id="start" parameterType="map">
+        UPDATE sheet_type
+        SET STATE  = 0,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <update id="stop" parameterType="map">
+        UPDATE sheet_type
+        SET STATE  = 1,
+            MODIFIER=#{MODIFIER},
+            MODIFY_DATE=now()
+        WHERE ID = #{ID}
+    </update>
+
+    <delete id="deleteById" parameterType="string">
+        DELETE
+        FROM sheet_type
+        WHERE ID = #{_parameter}
+    </delete>
+
+    <delete id="delete" parameterType="map">
+        DELETE FROM sheet_type WHERE ID in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+
 </mapper>
